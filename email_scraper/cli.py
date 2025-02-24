@@ -1,3 +1,4 @@
+import csv
 import json
 import sys
 from pathlib import Path
@@ -33,12 +34,21 @@ def main() -> None:
 
 
 @main.command()
+@click.option(
+    "-f",
+    "--format",
+    "format_name",
+    type=click.Choice(list(FORMATTERS.keys())),
+    default="json",
+    help="File format",
+)
 @click.argument("mbox_path", type=click.Path(exists=True, path_type=str))
-def read(mbox_path: str) -> None:
+def read(mbox_path: str, format_name: str) -> None:
     """Read emails from an mbox file and output as JSON.
 
     Outputs a JSON array of email objects to stdout, which can be piped to other commands.
     """
+
     try:
         pipeline = Pipeline([])
         emails = pipeline.load_emails(Path(mbox_path))
@@ -53,8 +63,16 @@ def read(mbox_path: str) -> None:
             }
             for e in emails
         ]
+        match format_name:
+            case "json":
+                json.dump(email_dicts, sys.stdout)
 
-        json.dump(email_dicts, sys.stdout)
+            case "csv":
+                fieldnames = ["sender", "subject", "date", "content", "headers"]
+                writer = csv.DictWriter(sys.stdout, fieldnames=fieldnames)
+                writer.writeheader()
+                writer.writerows(email_dicts)
+
     except Exception as e:
         console.print(f"[red]Error reading mbox: {e}[/red]")
         raise click.Abort() from e
@@ -106,7 +124,7 @@ def format(format_name: str) -> None:
     """
     try:
         data = json.load(sys.stdin)
-
+        print(data)
         formatter = FORMATTERS[format_name]()
         formatted = formatter.format(data)
 

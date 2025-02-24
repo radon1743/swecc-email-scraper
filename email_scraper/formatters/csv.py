@@ -1,4 +1,3 @@
-import json
 from typing import Any, Dict
 
 from . import OutputFormatter
@@ -18,6 +17,6 @@ class CsvFormatter(OutputFormatter):
             results: Dictionary of results to format
 
         Returns:
-            JSON-formatted string
+            CSV-formatted string
         """
-        return json.dumps(results, indent=2)
+        return "hello csv"
