@@ -7,6 +7,7 @@ from rich.console import Console
 
 from . import __version__
 from .formatters import FORMATTERS
+from .formatters.csv import CsvFormatter
 from .formatters.json import JsonFormatter
 from .processors import PROCESSORS, EmailData, Pipeline
 from .processors.example import ExampleProcessor
@@ -14,6 +15,7 @@ from .processors.example import ExampleProcessor
 # register built-in processors and formatters
 PROCESSORS["statistics"] = ExampleProcessor
 FORMATTERS["json"] = JsonFormatter
+FORMATTERS["csv"] = CsvFormatter
 
 console = Console(stderr=True)  # use stderr for status messages
 
